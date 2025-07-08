@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>War Robots Hangar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f1f1f1;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .hanger-container {
+            display: flex;
+            flex-direction: column; /* Stacks sections vertically */
+            width: 90%;
+            max-width: 1200px;
+            background-color: #fff;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Stronger shadow for depth */
+            border-radius: 12px; /* Slightly more rounded */
+            overflow: hidden;
+            border: 2px solid #337fbd; /* Main outer border for the whole hanger */
+        }
+
+        .top-section {
+            display: flex;
+            flex-grow: 1; /* Allows this section to take available vertical space */
+            background-color: #f0f4f7; /* Lighter background for the top area */
+            padding: 10px; /* Add some internal padding */
+            border-bottom: 2px solid #5293c7; /* Stronger separation from chapters */
+        }
+
+        .left-panel {
+            width: 220px; /* Adjusted width */
+            padding: 15px; /* Adjusted padding */
+            background-color: #e3e9ef; /* Slightly darker background for left panel */
+            border-right: 1px dashed #aeb4b8; /* Dashed line for subtle connection */
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            border-radius: 8px; /* Inner rounding */
+            margin-right: 10px; /* Space from robot */
+        }
+
+        .stats-box, .badges-box {
+            border: 1px solid #c0d1e0; /* Lighter border for inner boxes */
+            border-radius: 6px;
+            padding: 12px; /* Adjusted padding */
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
+        }
+
+        .stats-box h3, .badges-box h3 {
+            margin-top: 0;
+            color: #2f3941;
+            font-size: 15px;
+            border-bottom: 1px solid #eee; /* Separator for title */
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+
+        .stats-box p {
+            margin: 5px 0;
+            color: #68737d;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .badges-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px; /* Slightly smaller gap */
+            justify-content: center;
+        }
+
+        .badge-item {
+            background-color: #c2c8cc;
+            color: #fff;
+            border-radius: 50%;
+            width: 30px; /* Slightly smaller badges */
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            border: 2px solid #9aa3a8; /* Darker border when locked */
+            opacity: 0.6; /* More visible locked state */
+            transition: background-color 0.3s ease, border-color 0.3s ease, opacity 0.3s ease, transform 0.2s ease;
+        }
+
+        .badge-item.unlocked {
+            background-color: #ffd700; /* Gold */
+            color: #4b3e00; /* Darker text for contrast */
+            border-color: #ccac00; /* Darker gold border */
+            opacity: 1;
+            transform: scale(1.1); /* Pop a bit when unlocked */
+        }
+
+        .robot-display {
+            flex-grow: 1;
+            padding: 15px; /* Adjusted padding */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            border: 1px dashed #aeb4b8; /* Dashed border for robot section */
+            border-top: none; /* Remove top border if it clashes with outer container */
+            border-bottom: none;
+            border-radius: 8px; /* Inner rounding */
+            background-color: #fcfdff; /* Very light background for robot area */
+            margin: 0 10px; /* Space from left/right panels */
+        }
+
+        .robot-name-title {
+            margin-top: 0;
+            margin-bottom: 15px; /* Adjusted spacing */
+            color: #2f3941;
+            font-size: 22px;
+            text-align: center;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .robot-wrapper {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            /* Add a subtle inner shadow or border to the wrapper for connection feel */
+            border: 1px solid rgba(0,0,0,0.05);
+            border-radius: 5px;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.05);
+        }
+
+        .robot-display img {
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #5293c7;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Stronger shadow for pop-out effect */
+            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Bouncier transition */
+            transform-origin: center bottom;
+            object-fit: contain;
+        }
+
+        .weapons-display {
+            width: 250px;
+            padding: 15px; /* Adjusted padding */
+            display: flex;
+            flex-direction: column;
+            gap: 12px; /* Adjusted gap between weapons */
+            background-color: #e3e9ef; /* Same background as left panel for consistency */
+            border-left: 1px dashed #aeb4b8; /* Dashed line for subtle connection */
+            border-radius: 8px; /* Inner rounding */
+            margin-left: 10px; /* Space from robot */
+        }
+
+        .weapon-box {
+            border: 1px solid #c0d1e0; /* Lighter border */
+            border-radius: 6px;
+            padding: 8px; /* Adjusted padding */
+            background-color: #fff;
+            text-align: center;
+            opacity: 0.4; /* More dimmed when locked */
+            pointer-events: none;
+            transition: opacity 0.3s ease-in-out, transform 0.2s ease;
+            display: flex; /* Use flex to align content within box */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .weapon-box.unlocked {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(-2px); /* Slight lift when unlocked */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* Subtle shadow for unlocked weapons */
+            border-color: #5293c7; /* Blue border for unlocked */
+        }
+
+        .weapon-box h4 {
+            margin-top: 0;
+            color: #2f3941;
+            font-size: 14px; /* Smaller font for weapons */
+            margin-bottom: 3px;
+        }
+
+        .weapon-box p {
+            margin: 0;
+            color: #68737d;
+            font-size: 11px; /* Smaller font */
+        }
+
+        .weapon-box img {
+            max-width: 60%; /* Smaller images */
+            height: auto;
+            margin-bottom: 5px;
+            border-radius: 3px;
+            border: 1px solid #eee; /* Light border for weapon images */
+        }
+
+        .chapters-section {
+            padding: 20px 10px; /* Adjusted padding */
+            background-color: #e9ebed;
+            border-top: 2px solid #5293c7; /* Stronger separation from top section */
+            text-align: center;
+            border-radius: 0 0 12px 12px; /* Round bottom corners */
+            position: relative; /* For potential future connection lines up */
+        }
+
+        .chapters-section h2 {
+            margin-top: 0;
+            color: #2f3941;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .chapter-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px; /* Increased gap for better spacing */
+        }
+
+        .chapter-item {
+            background-color: #c2c8cc;
+            padding: 10px 18px; /* Larger padding */
+            border-radius: 8px; /* More rounded */
+            cursor: pointer;
+            color: #49545c;
+            font-weight: bold;
+            transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, border 0.3s ease-in-out, transform 0.2s ease;
+            min-width: 90px; /* Slightly wider */
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Subtle shadow */
+            position: relative;
+        }
+
+        .chapter-item:hover {
+            transform: translateY(-3px); /* Lift on hover */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .chapter-item.completed {
+            background-color: #aecfc2;
+            color: #186144; /* Darker green for contrast */
+            border: 2px solid #038153; /* Stronger green border */
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .chapter-item.current {
+            background-color: #adcce4;
+            color: #144a75;
+            border: 3px solid #1f73b7; /* Thicker, more prominent border */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3); /* Stronger shadow for active */
+            transform: scale(1.05); /* Slightly larger */
+        }
+    </style>
+</head>
+<body>
+    <div class="hanger-container">
+        <div class="top-section">
+            <div class="left-panel">
+                <div class="stats-box">
+                    <h3>Power</h3>
+                    <p><span id="robot-power">150000</span></p>
+                </div>
+                <div class="stats-box">
+                    <h3>Focus</h3>
+                    <p><span id="robot-focus">80%</span></p>
+                </div>
+                <div class="stats-box">
+                    <h3>Accuracy</h3>
+                    <p><span id="robot-accuracy">90%</span></p>
+                </div>
+                <div class="badges-box">
+                    <h3>Chapter Badges</h3>
+                    <div class="badges-container" id="badges-container">
+                        <div class="badge-item" data-badge-chapter="1">1</div>
+                        <div class="badge-item" data-badge-chapter="2">2</div>
+                        <div class="badge-item" data-badge-chapter="3">3</div>
+                        <div class="badge-item" data-badge-chapter="4">4</div>
+                        <div class="badge-item" data-badge-chapter="5">5</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="robot-display">
+                <h2 class="robot-name-title" id="robot-name">Your Robot Name</h2>
+                <div class="robot-wrapper">
+                    <img id="robot-image" src="https://via.placeholder.com/400x250?text=Your+Awesome+Robot" alt="Your Robot">
+                </div>
+            </div>
+
+            <div class="weapons-display" id="weapons-display">
+                <div class="weapon-box" data-chapter-unlock="1" data-weapon-id="1">
+                    <h4>Punisher (Light)</h4>
+                    <img src="https://via.placeholder.com/80x80?text=Punisher" alt="Punisher">
+                    <p>Damage: Low, Fire Rate: High</p>
+                </div>
+                <div class="weapon-box" data-chapter-unlock="2" data-weapon-id="2">
+                    <h4>Magnum (Light)</h4>
+                    <img src="https://via.placeholder.com/80x80?text=Magnum" alt="Magnum">
+                    <p>Damage: Medium, Fire Rate: Constant</p>
+                </div>
+                <div class="weapon-box" data-chapter-unlock="3" data-weapon-id="3">
+                    <h4>Taran (Medium)</h4>
+                    <img src="https://via.placeholder.com/80x80?text=Taran" alt="Taran">
+                    <p>Damage: High, Fire Rate: Burst</p>
+                </div>
+                <div class="weapon-box" data-chapter-unlock="4" data-weapon-id="4">
+                    <h4>Redeemer (Heavy)</h4>
+                    <img src="https://via.placeholder.com/80x80?text=Redeemer" alt="Redeemer">
+                    <p>Damage: Very High, Fire Rate: Sustained</p>
+                </div>
+                <div class="weapon-box" data-chapter-unlock="5" data-weapon-id="5">
+                    <h4>Glory (Heavy)</h4>
+                    <img src="https://via.placeholder.com/80x80?text=Glory" alt="Glory">
+                    <p>Damage: Extreme, Fire Rate: Shotgun</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="chapters-section">
+            <h2>Chapters</h2>
+            <ul class="chapter-list" id="chapter-list">
+                <li class="chapter-item current" data-chapter="1">Chapter 1</li>
+                <li class="chapter-item" data-chapter="2">Chapter 2</li>
+                <li class="chapter-item" data-chapter="3">Chapter 3</li>
+                <li class="chapter-item" data-chapter="4">Chapter 4</li>
+                <li class="chapter-item" data-chapter="5">Chapter 5</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const chapterList = document.getElementById('chapter-list');
+            const weaponDisplay = document.getElementById('weapons-display');
+            const robotPower = document.getElementById('robot-power');
+            const robotFocus = document.getElementById('robot-focus');
+            const robotAccuracy = document.getElementById('robot-accuracy');
+            const robotImage = document.getElementById('robot-image');
+            const robotName = document.getElementById('robot-name');
+            const badgesContainer = document.getElementById('badges-container');
+
+            let currentChapter = 1; // Start at Chapter 1
+
+            // Function to update the hanger's display
+            const updateHanger = () => {
+                // Update weapon visibility and unlocked status
+                const weaponBoxes = weaponDisplay.querySelectorAll('.weapon-box');
+                weaponBoxes.forEach(box => {
+                    const requiredChapter = parseInt(box.dataset.chapterUnlock);
+                    if (currentChapter >= requiredChapter) {
+                        box.classList.add('unlocked');
+                        box.classList.remove('locked');
+                    } else {
+                        box.classList.remove('unlocked');
+                        box.classList.add('locked');
+                    }
+                });
+
+                // Update chapter item styling (current, completed)
+                const chapterItems = chapterList.querySelectorAll('.chapter-item');
+                chapterItems.forEach(item => {
+                    const chapterNum = parseInt(item.dataset.chapter);
+                    if (chapterNum < currentChapter) {
+                        item.classList.add('completed');
+                        item.classList.remove('current');
+                    } else if (chapterNum === currentChapter) {
+                        item.classList.add('current');
+                        item.classList.remove('completed');
+                    } else {
+                        item.classList.remove('completed', 'current');
+                    }
+                });
+
+                // Update badges visibility and styling
+                const badgeItems = badgesContainer.querySelectorAll('.badge-item');
+                badgeItems.forEach(badge => {
+                    const badgeChapter = parseInt(badge.dataset.badgeChapter);
+                    if (currentChapter >= badgeChapter) {
+                        badge.classList.add('unlocked');
+                    } else {
+                        badge.classList.remove('unlocked');
+                    }
+                });
+
+
+                // Update robot stats, image, name, and size based on chapter progression
+                const robotSizes = {
+                    1: 0.8, // Slightly smaller base size for better initial fit
+                    2: 1.0,
+                    3: 1.2,
+                    4: 1.4,
+                    5: 1.6  // Significantly larger for Chapter 5
+                };
+
+                robotImage.style.transform = `scale(${robotSizes[currentChapter] || 0.8})`;
+
+                switch(currentChapter) {
+                    case 1:
+                        robotPower.textContent = '150000';
+                        robotFocus.textContent = '80%';
+                        robotAccuracy.textContent = '90%';
+                        robotImage.src = 'https://via.placeholder.com/400x250?text=Basic+Robot';
+                        robotName.textContent = 'Your Basic Robot';
+                        break;
+                    case 2:
+                        robotPower.textContent = '200000';
+                        robotFocus.textContent = '85%';
+                        robotAccuracy.textContent = '92%';
+                        robotImage.src = 'https://via.placeholder.com/400x250?text=Improved+Robot';
+                        robotName.textContent = 'Your Improved Robot';
+                        break;
+                    case 3:
+                        robotPower.textContent = '280000';
+                        robotFocus.textContent = '90%';
+                        robotAccuracy.textContent = '95%';
+                        robotImage.src = 'https://via.placeholder.com/400x250?text=Advanced+Robot';
+                        robotName.textContent = 'Your Advanced Robot';
+                        break;
+                    case 4:
+                        robotPower.textContent = '350000';
+                        robotFocus.textContent = '92%';
+                        robotAccuracy.textContent = '96%';
+                        robotImage.src = 'https://via.placeholder.com/400x250?text=Elite+Robot';
+                        robotName.textContent = 'Your Elite Robot';
+                        break;
+                    case 5:
+                        robotPower.textContent = '500000';
+                        robotFocus.textContent = '95%';
+                        robotAccuracy.textContent = '98%';
+                        robotImage.src = 'https://via.placeholder.com/400x250?text=Ultimate+Robot';
+                        robotName.textContent = 'Your Ultimate Robot';
+                        break;
+                    default:
+                        robotPower.textContent = 'N/A';
+                        robotFocus.textContent = 'N/A';
+                        robotAccuracy.textContent = 'N/A';
+                        robotImage.src = 'https://via.placeholder.com/400x250?text=Unknown+Robot';
+                        robotName.textContent = 'Unknown Robot';
+                        break;
+                }
+            };
+
+            // Event listener for chapter clicks (simulating completion)
+            chapterList.addEventListener('click', (event) => {
+                const clickedChapterItem = event.target.closest('.chapter-item');
+                if (clickedChapterItem) {
+                    const chapterNum = parseInt(clickedChapterItem.dataset.chapter);
+                    // Allow clicking on any chapter from 1 to 5 for demonstration
+                    if (chapterNum >= 1 && chapterNum

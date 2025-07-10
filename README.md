@@ -1,36 +1,20 @@
-# Voice Command Adventure
+# Type to Voice Game
 
-A fun Pygame-based adventure game controlled by your voice!
+A fun and simple Pygame-based game: type any word and hear it spoken aloud with a Doraemon-inspired face!
 
-## Features
-- Play using voice commands (move, attack, pause, etc.)
-- Simple robot character appears when you speak
-- Colorful, easy-to-use interface
+## How to Run
 
-## Requirements
-- Python 3.8+
-- Microphone
-- Windows (recommended)
-
-## Installation
-1. Install Python from https://www.python.org/
+1. Install Python 3.8+.
 2. Install dependencies:
-   ```
    pip install -r requirements.txt
-   ```
-   If PyAudio fails, download the correct .whl from https://www.lfd.uci.edu/~gohlke/pythonlibs/#pyaudio and install with:
-   ```
-   pip install path\to\PyAudio‑...whl
-   ```
-
-## Running the Game
-```
-python VoiceGame.py
-```
+3. Run the game:
+   python text_to_speech.py
 
 ## Controls
-- Use your voice! Try commands like "start game", "move forward", "attack", "pause", "resume", "exit".
-- You can also use the mouse and keyboard for menu navigation.
+
+- Type in the box and press Enter to hear the word.
+- Press Escape to clear input.
 
 ## License
-MIT License (see LICENSE file)
+
+MIT License
